@@ -1,0 +1,55 @@
+{
+	"name": "@zplflow/n8n-nodes-zplflow",
+	"version": "0.1.0",
+	"description": "Official n8n community node for Zplflow: Universal Thermal Label Bridge & ZPL/PDF conversion",
+	"license": "Apache-2.0",
+	"homepage": "https://zplflow.com",
+	"keywords": [
+		"n8n-community-node-package",
+		"zplflow",
+		"zpl",
+		"zebra",
+		"thermal-printer",
+		"pdf-to-zpl",
+		"zpl-to-pdf"
+	],
+	"author": {
+		"name": "zplflow",
+		"email": "support@zplflow.com",
+		"url": "https://zplflow.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/zplflow/n8n-nodes-zplflow.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"test": "echo \"No test specified yet\" && exit 0"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/ZplflowApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Zplflow/Zplflow.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "^0.8.0",
+		"eslint": "^9.20.0",
+		"prettier": "^3.5.0",
+		"typescript": "^5.7.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

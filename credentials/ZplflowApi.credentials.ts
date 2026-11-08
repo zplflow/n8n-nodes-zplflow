@@ -29,7 +29,7 @@ export class ZplflowApi implements ICredentialType {
 			displayName: 'Base URL',
 			name: 'baseUrl',
 			type: 'string',
-			default: 'https://api.zplflow.com',
+			default: 'https://api.zplflow.io',
 			required: true,
 			description: 'Base URL of the Zplflow API',
 		},
@@ -39,7 +39,8 @@ export class ZplflowApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				'X-API-Key': '={{$credentials?.apiKey}}',
+				Authorization: '=Bearer {{$credentials.apiKey}}',
+				'X-API-Key': '={{$credentials.apiKey}}',
 			},
 		},
 	};

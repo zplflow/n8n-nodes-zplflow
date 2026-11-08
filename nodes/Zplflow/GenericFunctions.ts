@@ -103,10 +103,11 @@ export async function zplflowApiRequest(
 	customOptions: IRequestCustomOptions = {},
 ): Promise<ZplflowApiResponse> {
 	const credentials = await this.getCredentials('zplflowApi');
-	const rawBaseUrl = (credentials.baseUrl as string) || 'https://api.zplflow.com';
+	const rawBaseUrl = (credentials.baseUrl as string) || 'https://api.zplflow.io';
 	const baseUrl = rawBaseUrl.replace(/\/+$/, '');
 
 	const headers: IDataObject = {
+		Authorization: `Bearer ${credentials.apiKey as string}`,
 		'X-API-Key': credentials.apiKey as string,
 		'Idempotency-Key': generateIdempotencyKey(),
 		Accept: 'application/json',

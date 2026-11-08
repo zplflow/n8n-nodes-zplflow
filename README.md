@@ -38,7 +38,7 @@ npm install @zplflow/n8n-nodes-zplflow
 1. Sign up for a Zplflow account at [zplflow.com](https://zplflow.com).
 2. Generate an API Key in your Zplflow Dashboard.
 3. In n8n, create a new credential: **Zplflow API**.
-4. Enter your **API Key** and optional **Base URL** (defaults to `https://api.zplflow.com`).
+4. Enter your **API Key** and optional **Base URL** (defaults to `https://api.zplflow.io`).
 
 ---
 

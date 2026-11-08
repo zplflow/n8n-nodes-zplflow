@@ -69,7 +69,7 @@ export const pipelineFields: INodeProperties[] = [
 		typeOptions: {
 			rows: 5,
 		},
-		default: '',
+		default: '^XA\n^FO50,50^ADN,36,20^FDHello Zplflow^FS\n^XZ',
 		required: true,
 		displayOptions: {
 			show: {
@@ -92,6 +92,41 @@ export const pipelineFields: INodeProperties[] = [
 			},
 		},
 		description: 'Name of the binary property containing the ZPL file to process',
+	},
+	// Page selection for preview
+	{
+		displayName: 'Page',
+		name: 'page',
+		type: 'number',
+		typeOptions: {
+			minValue: 0,
+		},
+		default: 0,
+		displayOptions: {
+			show: {
+				resource: ['pipeline'],
+				operation: ['preview'],
+			},
+		},
+		description: '0-indexed page number of the label to preview',
+	},
+	// Optional transient steps for preview
+	{
+		displayName: 'Steps (JSON)',
+		name: 'stepsJson',
+		type: 'string',
+		typeOptions: {
+			rows: 4,
+		},
+		default: '[]',
+		displayOptions: {
+			show: {
+				resource: ['pipeline'],
+				operation: ['preview'],
+			},
+		},
+		description:
+			'Optional JSON array of transient pipeline steps to apply before rendering. Defaults to empty array [] for raw preview.',
 	},
 	// Dynamic variables collection
 	{

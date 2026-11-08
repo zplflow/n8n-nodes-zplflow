@@ -303,9 +303,21 @@ export class Zplflow implements INodeType {
 							i,
 							'preview',
 						) as string;
+						const page = this.getNodeParameter('page', i, 0) as number;
+						const stepsJson = this.getNodeParameter('stepsJson', i, '[]') as string;
+						let steps: unknown = [];
+						if (stepsJson) {
+							try {
+								steps = typeof stepsJson === 'string' ? JSON.parse(stepsJson) : stepsJson;
+							} catch {
+								steps = [];
+							}
+						}
 
 						const response = await zplflowApiRequest.call(this, 'POST', '/v1/pipelines/preview', {
-							zpl_base64: zplBase64,
+							zpl: rawZpl,
+							steps: Array.isArray(steps) ? steps : [],
+							page: Number.isInteger(page) ? page : 0,
 						});
 
 						let pngBuffer: ZplflowBuffer = nodeBuffer.alloc(0);
@@ -322,7 +334,8 @@ export class Zplflow implements INodeType {
 						returnData.push({
 							json: {
 								zpl: response.zpl || rawZpl,
-								dpi: response.dpi || 203,
+								page_count: response.page_count ?? 1,
+								current_page: response.current_page ?? 0,
 							},
 							binary: {
 								...items[i].binary,

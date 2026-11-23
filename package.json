@@ -1,22 +1,32 @@
 {
 	"name": "@zplflow/n8n-nodes-zplflow",
 	"version": "0.1.1",
-	"description": "Official n8n community node for Zplflow: Universal Thermal Label Bridge & ZPL/PDF conversion",
+	"description": "Official n8n community node for Zplflow: Universal Thermal Label Infrastructure — 6-dialect AST transpilation (ZPL, EPL2, DPL, IPL, TSPL, SBPL), bidirectional PDF conversion, and programmable ZPL pipelines",
 	"license": "MIT",
-	"homepage": "https://zplflow.com",
+	"homepage": "https://www.zplflow.io",
 	"keywords": [
 		"n8n-community-node-package",
 		"zplflow",
 		"zpl",
+		"epl",
+		"dpl",
+		"ipl",
+		"tspl",
+		"sbpl",
 		"zebra",
 		"thermal-printer",
+		"thermal-label",
+		"label-bridge",
+		"zpl-pipeline",
+		"barcode",
+		"gs1-128",
 		"pdf-to-zpl",
 		"zpl-to-pdf"
 	],
 	"author": {
 		"name": "zplflow",
 		"email": "support@zplflow.com",
-		"url": "https://zplflow.com"
+		"url": "https://www.zplflow.io"
 	},
 	"repository": {
 		"type": "git",

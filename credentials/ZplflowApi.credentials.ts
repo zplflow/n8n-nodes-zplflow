@@ -13,7 +13,7 @@ export class ZplflowApi implements ICredentialType {
 
 	icon: Icon = 'file:../icons/zplflow.svg';
 
-	documentationUrl = 'https://zplflow.com/docs';
+	documentationUrl = 'https://www.zplflow.io/docs';
 
 	properties: INodeProperties[] = [
 		{

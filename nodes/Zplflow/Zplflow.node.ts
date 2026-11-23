@@ -51,7 +51,7 @@ export class Zplflow implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
-			'Universal Thermal Label Bridge for bi-directional ZPL ↔ PDF conversion & pipelines',
+			'Universal Thermal Label Infrastructure: 6-dialect transpilation (ZPL, EPL2, DPL, IPL, TSPL, SBPL), PDF conversion, and programmable ZPL pipelines',
 		defaults: {
 			name: 'Zplflow',
 		},

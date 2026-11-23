@@ -11,7 +11,7 @@ export class ZplflowApi implements ICredentialType {
 
 	displayName = 'Zplflow API';
 
-	icon: Icon = 'file:../icons/zplflow.svg';
+	icon: Icon = { light: 'file:../icons/zplflow.svg', dark: 'file:../icons/zplflow.svg' };
 
 	documentationUrl = 'https://www.zplflow.io/docs';
 

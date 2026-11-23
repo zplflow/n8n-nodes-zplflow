@@ -13,7 +13,7 @@ export const pipelineOperations: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Apply Pipeline',
+				name: 'Apply',
 				value: 'apply',
 				description: 'Apply a transformation pipeline to ZPL label documents',
 				action: 'Apply pipeline',

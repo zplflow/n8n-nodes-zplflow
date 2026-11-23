@@ -2,9 +2,9 @@ import type {
 	IDataObject,
 	IExecuteFunctions,
 	IHookFunctions,
-	ILoadOptionsFunctions,
 	IHttpRequestMethods,
-	IRequestOptions,
+	IHttpRequestOptions,
+	ILoadOptionsFunctions,
 	JsonObject,
 } from 'n8n-workflow';
 import { NodeApiError } from 'n8n-workflow';
@@ -36,36 +36,17 @@ export interface IRequestCustomOptions {
 }
 
 /**
- * Minimal description of the Node.js `crypto` builtin. The package does not
- * ship `@types/node`, so the module is loaded lazily through `require` and
- * typed with the small surface that is actually used here.
+ * Minimal structural view of the global Web Crypto API (`crypto.randomUUID`),
+ * available natively in Node.js 19+ and n8n Cloud runtimes.
  */
-interface NodeCryptoModule {
+interface CryptoLike {
 	randomUUID?: () => string;
 }
 
-declare const require: (moduleId: string) => unknown;
-
-let cachedCrypto: NodeCryptoModule | undefined;
-
-function getCrypto(): NodeCryptoModule {
-	if (cachedCrypto === undefined) {
-		const globalCrypto = (globalThis as { crypto?: NodeCryptoModule }).crypto;
-		if (globalCrypto && typeof globalCrypto.randomUUID === 'function') {
-			cachedCrypto = globalCrypto;
-		} else {
-			try {
-				cachedCrypto = require('crypto') as NodeCryptoModule;
-			} catch {
-				cachedCrypto = {};
-			}
-		}
-	}
-	return cachedCrypto;
-}
+declare const crypto: CryptoLike | undefined;
 
 /**
- * Generates a RFC 4122 v4 UUID used to fall back on the rare runtimes where
+ * Generates a RFC 4122 v4 UUID used to fall back on runtimes where
  * `crypto.randomUUID` is unavailable.
  */
 function fallbackUuid(): string {
@@ -81,17 +62,17 @@ function fallbackUuid(): string {
  * processed (and billed) twice by the Zplflow API.
  */
 export function generateIdempotencyKey(): string {
-	const crypto = getCrypto();
-	if (typeof crypto.randomUUID === 'function') {
+	if (typeof crypto !== 'undefined' && typeof crypto?.randomUUID === 'function') {
 		return crypto.randomUUID();
 	}
 	return fallbackUuid();
 }
 
 /**
- * Thin wrapper around `this.helpers.request` used by every Zplflow node
- * function. It resolves the credentials, normalises the base URL, attaches the
- * API key plus a freshly generated `Idempotency-Key` header and maps request
+ * Thin wrapper around `this.helpers.httpRequestWithAuthentication` used by
+ * every Zplflow node function. It resolves the base URL from credentials,
+ * attaches a freshly generated `Idempotency-Key` header, delegates auth
+ * headers to the `zplflowApi` credential definition, and maps request
  * failures to a `NodeApiError`.
  */
 export async function zplflowApiRequest(
@@ -107,8 +88,6 @@ export async function zplflowApiRequest(
 	const baseUrl = rawBaseUrl.replace(/\/+$/, '');
 
 	const headers: IDataObject = {
-		Authorization: `Bearer ${credentials.apiKey as string}`,
-		'X-API-Key': credentials.apiKey as string,
 		'Idempotency-Key': generateIdempotencyKey(),
 		Accept: 'application/json',
 		...customOptions.headers,
@@ -125,17 +104,17 @@ export async function zplflowApiRequest(
 			? customOptions.json
 			: headers['Content-Type'] === 'application/json';
 
-	const options: IRequestOptions = {
+	const options: IHttpRequestOptions = {
 		headers,
 		method,
-		uri: `${baseUrl}${endpoint}`,
+		url: `${baseUrl}${endpoint}`,
 		body,
 		qs: query,
 		json: isJson,
 	};
 
 	try {
-		return await this.helpers.request(options);
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'zplflowApi', options);
 	} catch (error) {
 		throw new NodeApiError(this.getNode(), error);
 	}

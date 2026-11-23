@@ -1,6 +1,6 @@
 {
 	"name": "@zplflow/n8n-nodes-zplflow",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Official n8n community node for Zplflow: Universal Thermal Label Bridge & ZPL/PDF conversion",
 	"license": "MIT",
 	"homepage": "https://zplflow.com",

@@ -11,8 +11,8 @@ import { accountFields, accountOperations } from './AccountDescription';
 import { zplflowApiRequest } from './GenericFunctions';
 
 /**
- * Minimal structural view of the Node.js `Buffer` used by this node. It is
- * resolved from `globalThis` so the module stays self-contained.
+ * Minimal structural view of the Node.js `Buffer` global used by this node so
+ * the module stays self-contained without requiring `@types/node`.
  */
 interface ZplflowBuffer {
 	toString(encoding?: string): string;
@@ -25,7 +25,7 @@ interface ZplflowBufferConstructor {
 
 type BinaryPayload = Parameters<IExecuteFunctions['helpers']['prepareBinaryData']>[0];
 
-const nodeBuffer = (globalThis as unknown as { Buffer: ZplflowBufferConstructor }).Buffer;
+declare const Buffer: ZplflowBufferConstructor;
 
 /**
  * Description of the response returned by the Universal Label Bridge
@@ -46,7 +46,7 @@ export class Zplflow implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Zplflow',
 		name: 'zplflow',
-		icon: 'file:zplflow.svg',
+		icon: { light: 'file:zplflow.svg', dark: 'file:zplflow.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -55,6 +55,7 @@ export class Zplflow implements INodeType {
 		defaults: {
 			name: 'Zplflow',
 		},
+		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
@@ -122,7 +123,7 @@ export class Zplflow implements INodeType {
 						if (response.pages && response.pages.length > 0) {
 							zplText = response.pages
 								.map((p: { zpl_base64: string }) =>
-									nodeBuffer.from(p.zpl_base64, 'base64').toString('utf-8'),
+									Buffer.from(p.zpl_base64, 'base64').toString('utf-8'),
 								)
 								.join('\n');
 						}
@@ -136,6 +137,7 @@ export class Zplflow implements INodeType {
 								zpl: zplText,
 							},
 							binary: items[i].binary,
+							pairedItem: { item: i },
 						});
 					} else {
 						// Universal Label Bridge operations: text/plain raw body
@@ -199,14 +201,14 @@ export class Zplflow implements INodeType {
 						const parsedResponse: LabelBridgeResponse =
 							typeof response === 'string' ? JSON.parse(response) : response;
 
-						let outputBytes: ZplflowBuffer = nodeBuffer.alloc(0);
+						let outputBytes: ZplflowBuffer = Buffer.alloc(0);
 						let outputText = '';
 
 						const pages = parsedResponse.pages;
 						if (pages && pages.length > 0) {
 							const base64Val = pages[0][config.key];
 							if (base64Val) {
-								outputBytes = nodeBuffer.from(base64Val, 'base64');
+								outputBytes = Buffer.from(base64Val, 'base64');
 								if (!config.isPdf) {
 									outputText = outputBytes.toString('utf-8');
 								}
@@ -236,6 +238,7 @@ export class Zplflow implements INodeType {
 								...items[i].binary,
 								[outputBinaryProperty]: binaryData,
 							},
+							pairedItem: { item: i },
 						});
 					}
 				} else if (resource === 'pipeline') {
@@ -250,7 +253,7 @@ export class Zplflow implements INodeType {
 						rawZpl = zplBuffer.toString('utf-8');
 					}
 
-					const zplBase64 = nodeBuffer.from(rawZpl, 'utf-8').toString('base64');
+					const zplBase64 = Buffer.from(rawZpl, 'utf-8').toString('base64');
 
 					if (operation === 'apply') {
 						const pipelineId = this.getNodeParameter('pipelineId', i) as string;
@@ -283,9 +286,9 @@ export class Zplflow implements INodeType {
 
 						let transformedZpl = '';
 						if (response.documents && response.documents.length > 0) {
-							transformedZpl = nodeBuffer
-								.from(response.documents[0].zpl_base64, 'base64')
-								.toString('utf-8');
+							transformedZpl = Buffer.from(response.documents[0].zpl_base64, 'base64').toString(
+								'utf-8',
+							);
 						}
 
 						returnData.push({
@@ -296,6 +299,7 @@ export class Zplflow implements INodeType {
 								zpl: transformedZpl,
 							},
 							binary: items[i].binary,
+							pairedItem: { item: i },
 						});
 					} else if (operation === 'preview') {
 						const outputBinaryProperty = this.getNodeParameter(
@@ -320,9 +324,9 @@ export class Zplflow implements INodeType {
 							page: Number.isInteger(page) ? page : 0,
 						});
 
-						let pngBuffer: ZplflowBuffer = nodeBuffer.alloc(0);
+						let pngBuffer: ZplflowBuffer = Buffer.alloc(0);
 						if (response.png_base64) {
-							pngBuffer = nodeBuffer.from(response.png_base64, 'base64');
+							pngBuffer = Buffer.from(response.png_base64, 'base64');
 						}
 
 						const binaryData = await this.helpers.prepareBinaryData(
@@ -341,6 +345,7 @@ export class Zplflow implements INodeType {
 								...items[i].binary,
 								[outputBinaryProperty]: binaryData,
 							},
+							pairedItem: { item: i },
 						});
 					}
 				} else if (resource === 'account') {
@@ -348,6 +353,7 @@ export class Zplflow implements INodeType {
 						const response = await zplflowApiRequest.call(this, 'GET', '/v1/account/balance');
 						returnData.push({
 							json: response,
+							pairedItem: { item: i },
 						});
 					}
 				}
